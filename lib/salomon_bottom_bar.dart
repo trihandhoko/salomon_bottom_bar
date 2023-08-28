@@ -18,6 +18,7 @@ class SalomonBottomBar extends StatelessWidget {
     this.itemPadding = const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
     this.duration = const Duration(milliseconds: 500),
     this.curve = Curves.easeOutQuint,
+    this.itemHeight = 20,
   }) : super(key: key);
 
   /// A list of tabs to display, ie `Home`, `Likes`, etc
@@ -56,6 +57,8 @@ class SalomonBottomBar extends StatelessWidget {
   /// The transition curve
   final Curve curve;
 
+  final double itemHeight;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -67,9 +70,7 @@ class SalomonBottomBar extends StatelessWidget {
         child: Row(
           /// Using a different alignment when there are 2 items or less
           /// so it behaves the same as BottomNavigationBar.
-          mainAxisAlignment: items.length <= 2
-              ? MainAxisAlignment.spaceEvenly
-              : MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: items.length <= 2 ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.spaceBetween,
           children: [
             for (final item in items)
               TweenAnimationBuilder<double>(
@@ -79,19 +80,13 @@ class SalomonBottomBar extends StatelessWidget {
                 curve: curve,
                 duration: duration,
                 builder: (context, t, _) {
-                  final _selectedColor = item.selectedColor ??
-                      selectedItemColor ??
-                      theme.primaryColor;
+                  final _selectedColor = item.selectedColor ?? selectedItemColor ?? theme.primaryColor;
 
-                  final _unselectedColor = item.unselectedColor ??
-                      unselectedItemColor ??
-                      theme.iconTheme.color;
+                  final _unselectedColor = item.unselectedColor ?? unselectedItemColor ?? theme.iconTheme.color;
+                  final _height = itemHeight;
 
                   return Material(
-                    color: Color.lerp(
-                        _selectedColor.withOpacity(0.0),
-                        _selectedColor.withOpacity(selectedColorOpacity ?? 0.1),
-                        t),
+                    color: Color.lerp(_selectedColor.withOpacity(0.0), _selectedColor.withOpacity(selectedColorOpacity ?? 0.1), t),
                     shape: itemShape,
                     child: InkWell(
                       onTap: () => onTap?.call(items.indexOf(item)),
@@ -101,21 +96,15 @@ class SalomonBottomBar extends StatelessWidget {
                       splashColor: _selectedColor.withOpacity(0.1),
                       hoverColor: _selectedColor.withOpacity(0.1),
                       child: Padding(
-                        padding: itemPadding -
-                            (Directionality.of(context) == TextDirection.ltr
-                                ? EdgeInsets.only(right: itemPadding.right * t)
-                                : EdgeInsets.only(left: itemPadding.left * t)),
+                        padding: itemPadding - (Directionality.of(context) == TextDirection.ltr ? EdgeInsets.only(right: itemPadding.right * t) : EdgeInsets.only(left: itemPadding.left * t)),
                         child: Row(
                           children: [
                             IconTheme(
                               data: IconThemeData(
-                                color: Color.lerp(
-                                    _unselectedColor, _selectedColor, t),
+                                color: Color.lerp(_unselectedColor, _selectedColor, t),
                                 size: 24,
                               ),
-                              child: items.indexOf(item) == currentIndex
-                                  ? item.activeIcon ?? item.icon
-                                  : item.icon,
+                              child: items.indexOf(item) == currentIndex ? item.activeIcon ?? item.icon : item.icon,
                             ),
                             ClipRect(
                               clipBehavior: Clip.antiAlias,
@@ -124,25 +113,15 @@ class SalomonBottomBar extends StatelessWidget {
                                 ///
                                 /// The Align property appears to make these full height, would be
                                 /// best to find a way to make it respond only to padding.
-                                height: 20,
+                                height: _height,
                                 child: Align(
                                   alignment: Alignment(-0.2, 0.0),
                                   widthFactor: t,
                                   child: Padding(
-                                    padding: Directionality.of(context) ==
-                                            TextDirection.ltr
-                                        ? EdgeInsets.only(
-                                            left: itemPadding.left / 2,
-                                            right: itemPadding.right)
-                                        : EdgeInsets.only(
-                                            left: itemPadding.left,
-                                            right: itemPadding.right / 2),
+                                    padding: Directionality.of(context) == TextDirection.ltr ? EdgeInsets.only(left: itemPadding.left / 2, right: itemPadding.right) : EdgeInsets.only(left: itemPadding.left, right: itemPadding.right / 2),
                                     child: DefaultTextStyle(
                                       style: TextStyle(
-                                        color: Color.lerp(
-                                            _selectedColor.withOpacity(0.0),
-                                            _selectedColor,
-                                            t),
+                                        color: Color.lerp(_selectedColor.withOpacity(0.0), _selectedColor, t),
                                         fontWeight: FontWeight.w600,
                                       ),
                                       child: item.title,
