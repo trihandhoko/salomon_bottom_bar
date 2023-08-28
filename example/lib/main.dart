@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
         ),
         bottomNavigationBar: SalomonBottomBar(
           currentIndex: _currentIndex,
+          itemHeight: 30,
           onTap: (i) => setState(() => _currentIndex = i),
           items: [
             /// Home
